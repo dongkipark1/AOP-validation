@@ -1,9 +1,13 @@
 package shop.mtcoding.blog.board;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import shop.mtcoding.blog._core.errors.exception.Exception400;
 import shop.mtcoding.blog._core.utils.ApiUtil;
 import shop.mtcoding.blog.user.User;
 
@@ -39,14 +43,34 @@ public class BoardController {
     }
 
     @PostMapping("/api/boards")
-    public ResponseEntity<?> save(@RequestBody BoardRequest.SaveDTO reqDTO) {
+    public ResponseEntity<?> save(@Valid @RequestBody BoardRequest.SaveDTO reqDTO, Errors errors) { // SaveDTO안에 어노테이션을 걸어주면 유효성검사를 실행해 준다 그리면 해당 메서드에 반드시 @VALID를 걸어주고 그 모든 정보의 대한 오류는 ERRORS 객체에 담아준다
+
+//        if (errors.hasErrors()){
+//            for (FieldError error : errors.getFieldErrors()){
+//                System.out.println(error.getField());
+//                System.out.println(error.getDefaultMessage());
+//
+//                throw new Exception400(error.getDefaultMessage()+ " : " + error.getField());
+//            }
+//        }
+
         User sessionUser = (User) session.getAttribute("sessionUser");
         BoardResponse.DTO respDTO = boardService.글쓰기(reqDTO, sessionUser);
         return ResponseEntity.ok(new ApiUtil(respDTO));
     }
 
     @PutMapping("/api/boards/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody BoardRequest.UpdateDTO reqDTO) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @Valid @RequestBody BoardRequest.UpdateDTO reqDTO, Errors errors) {
+
+//        if (errors.hasErrors()){
+//            for (FieldError error : errors.getFieldErrors()){
+//                System.out.println(error.getField());
+//                System.out.println(error.getDefaultMessage());
+//
+//                throw new Exception400(error.getDefaultMessage()+ " : " + error.getField());
+//            }
+//        }
+
         User sessionUser = (User) session.getAttribute("sessionUser");
         BoardResponse.DTO respDTO = boardService.글수정(id, sessionUser.getId(), reqDTO);
         return ResponseEntity.ok(new ApiUtil(respDTO));
